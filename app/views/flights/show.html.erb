@@ -74,58 +74,88 @@
 var cols = <%= @flight.airplane.rows %>+1;
 var rows =<%= @flight.airplane.columns %> + 1;
 var columHeader= ['ALERT', 'A', 'B', 'C', 'D', 'E', 'F']
+var bookingRequest = []
+
 
 var generateMap = function() {
   var str = []
   var blockSeats = []
+console.log(str);
   for (var i = 1; i < rows; i++) {
-    console.log("row:"+i);
     str.push('<li class="row row--'+i+'">')
-    str.push('<ol class="seats" type="'+"Letter"+'">')
+    var letters = " ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+    var letter = letters[i];
+    str.push('<ol class="seats" type="'+ letter +'">')
     //How to push the columHeader[j] outside the loop
-
+    console.log(str);
     for (var j = 1; j < cols; j++) {
 
       columLetter = columHeader[j];
       seatId = (i+columLetter)
-      htmlColum = ('<ol class="seats" type=“'+columLetter+'”>')
+      htmlColum = ('<ol class="seats" type="'+columLetter+'">')
 
 
-      htmlSeats = '<li class="seat”> <input type="checkbox" id=“'+seatId+'“/> <label for=“'+seatId+'“>'+seatId+'</label> </li>'
+      htmlSeats = '<li class="seat"> <input class="seatRow" type="checkbox" id="'+seatId+'"/> <label for="'+seatId+'">'+seatId+'</label> </li>'
       str.push(htmlSeats)
 
-      // The information comes in [1,21] out 21A
-      seatsTakenConv = function () {
-        rbSeatsArray = <%= @flight.seats_taken %>
-        // var bookedId = get the seccond elemet + columHeader(first element)
-        //blockSeats.push(bookedId)
-        //if seatId contains block seats
-        //type+= disabled
-        //seatId = Occupied
+      // The information comes in [1,21] out 21A for render the plane and go back as [1,21] to do the reservation
 
-      }
+      // seatsTakenConv();
+      // seatsTakenConv = function () {
+      //   rbSeatsArray = <%= @flight.seats_taken %>
+      //   var convertToId = (i+columLetter)
+      //   console.log("test"+convertToId);
+      //   // var bookedId = get the seccond elemet + columHeader(first element)
+      //   //blockSeats.push(bookedId)
+      //   //if seatId contains block seats
+      //   //type+= disabled
+      //   //seatId = Occupied
 
+      // }
+      console.log(str);
     }
 str.push('</ol> </li>')
   }
 
-  $('#cabin fuselage').append(str.join(''));
+  $('.cabin.fuselage').html(str.join(''));
 };
+
 
 //AirPlane Create
 $(document).ready(function() {
   generateMap();
 
+//Identify the click and put in array the Id
+  $( ".seatRow").click(function () {
+      var $id = $(this).attr("id");
+      console.log("test " +$id);
+      bookingRequest.push($id)
+      console.log(bookingRequest);
+  });
 });
+
 
 </script>
 
 <!-- AirPlane -->
 
+<!-- submit  -->
 
+  <div id="centralize" class="field">
+    <%= f.label :row %>
+    <%= f.number_field :row %> </p>
+    <%= f.label :column %>
+    <%= f.number_field :column %>
+  </div>
+  <div id="create_reservation" class="actions">
+    <%= f.submit %>
+  </div>
+
+
+<% end %>
 <div class="plane">
   <div class="cockpit">
-    <h1>Burning Airlines</h1>
+    <h1>Please select a seat</h1>
   </div>
   <div class="exit exit--front fuselage">
 
@@ -134,15 +164,15 @@ $(document).ready(function() {
     <li class="row row--1">
       <ol class="seats" type="A">
         <li class="seat">
-          <input type="checkbox" id="1A" />
+          <input class="seatRow" type="checkbox" id="1A" />
           <label for="1A">1A</label>
         </li>
         <li class="seat">
-          <input type="checkbox" id="1B" />
+          <input class="seatRow" type="checkbox" id="1B" />
           <label for="1B">1B</label>
         </li>
         <li class="seat">
-          <input type="checkbox" id="1C" />
+          <input class="seatRow" type="checkbox" id="1C" />
           <label for="1C">1C</label>
         </li>
         <li class="seat">
@@ -416,19 +446,3 @@ $(document).ready(function() {
 
   </div>
 </div>
-
-
-<!-- submit  -->
-
-  <div id="centralize" class="field">
-    <%= f.label :row %>
-    <%= f.number_field :row %>
-    <%= f.label :column %>
-    <%= f.number_field :column %>
-  </div>
-  <div id="create_reservation" class="actions">
-    <%= f.submit %>
-  </div>
-
-
-<% end %>
